@@ -34,25 +34,49 @@ Bu proje, Jetpack Compose ile hazırlanmış Google Play Store benzeri bir Andro
 
 > Not: Bu dosya kişisel proje kimlik bilgisi içerir, repoya push etmeyin.
 
-### 4) Android Studio ile çalıştır
-1. Projeyi Android Studio'da aç.
-2. Gradle sync tamamlanınca emulator veya fiziksel cihaz seç.
-3. **Run** ile uygulamayı başlat.
+---
 
-### 5) Firebase'te çalıştığını doğrula
-- Firebase Console → **Analytics** bölümüne gir.
-- Uygulamayı açtıktan sonra `screen_view` eventini bir süre sonra görebilirsin.
+## Android Studio olmadan çalıştırma (CLI çözümü)
+Evet, çözüm var ✅
 
-## Terminalden APK üretme
-> Not: Android Gradle Plugin için JDK 17 önerilir.
+### Gerekli araçlar
+- JDK 17
+- Gradle (sistemde kurulu)
+- Android SDK + `platform-tools` (`adb`)
+- (Opsiyonel) Emulator veya bağlı fiziksel Android cihaz
 
+### 1) APK üret (komut satırı)
 ```bash
 cd /workspace/proje
-export JAVA_HOME=/root/.local/share/mise/installs/java/17.0.2
-export PATH="$JAVA_HOME/bin:$PATH"
-gradle assembleDebug --no-daemon
+scripts/build_apk.sh
 ```
 
-Üretilen debug APK:
+Bu script şunları yapar:
+- `app/google-services.json` dosyasını kontrol eder
+- JDK 17 yoksa uyarır/hata verir
+- `gradle :app:assembleDebug --no-daemon` ile APK üretir
+
+Çıktı APK:
 
 `app/build/outputs/apk/debug/app-debug.apk`
+
+### 2) APK’yı cihaza yükle
+```bash
+cd /workspace/proje
+scripts/install_apk.sh
+```
+
+### 3) Firebase Analytics doğrulama
+- Firebase Console → **Analytics** bölümüne gir.
+- Uygulamayı açtıktan sonra `screen_view` eventini bir süre sonra görürsün.
+
+---
+
+## Manuel komutlar (script kullanmadan)
+```bash
+cd /workspace/proje
+export JAVA_HOME=/path/to/jdk-17
+export PATH="$JAVA_HOME/bin:$PATH"
+gradle :app:assembleDebug --no-daemon
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
